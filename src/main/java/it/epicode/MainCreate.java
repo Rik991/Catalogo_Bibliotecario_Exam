@@ -87,7 +87,7 @@ public class MainCreate {
             Prestito p2 = new Prestito();
             p2.setUtente(em.find(Utente.class, faker.number().numberBetween(1, 5))); // Decido random quale dei 4 utenti ha fatto il prestito
 
-            // Decidi casualmente se il prestito è di un libro o di una rivista
+            // decido casualmente se il prestito è di un libro o di una rivista
             Catalogo elementoPrestato;
             if (faker.bool().bool()) {
                 elementoPrestato = em.find(Libro.class, faker.number().numberBetween(1, 10));
@@ -95,13 +95,13 @@ public class MainCreate {
                 elementoPrestato = em.find(Rivista.class, faker.number().numberBetween(1, 10));
             }
 
-            // Verifica che l'elemento prestato non sia nullo dato che mi causava errori la data di restituzione a null
+            // verifichiamo che l'elemento prestato non sia nullo dato che mi causava errori la data di restituzione a null
             if (elementoPrestato != null) {
                 p2.setElementoPrestato(elementoPrestato);
                 p2.setDataInizioPrestito(LocalDate.now().minusDays(faker.number().numberBetween(1, 365)));
                 p2.setDataRestituzionePrevista(p2.getDataInizioPrestito().plusDays(30));
 
-                // Decidi casualmente se impostare dataRestituzioneEffettiva a null o a una data futura cos' avremo prestiti scaduti e prestiti restituiti
+                // inseriamo casualmente dataRestituzioneEffettiva a null o a una data futura cos' avremo prestiti scaduti e prestiti restituiti
                 if (faker.bool().bool()) {
                     p2.setDataRestituzioneEffettiva(null);
                 } else {

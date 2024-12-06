@@ -27,50 +27,55 @@ public class MainMenu {
 
         boolean exit = false;
         while (!exit) {
-            System.out.println("Menu:");
-            System.out.println("1. Aggiungi elemento del catalogo");
-            System.out.println("2. Rimuovi elemento dal catalogo (ISBN)");
-            System.out.println("3. Ricerca per ISBN");
-            System.out.println("4. Ricerca per anno di pubblicazione");
-            System.out.println("5. Ricerca per autore");
-            System.out.println("6. Ricerca per titolo o parte di esso");
-            System.out.println("7. Ricerca elementi in prestito (numero tessera)");
-            System.out.println("8. Ricerca prestiti scaduti e non restituiti");
-            System.out.println("0. Esci");
-            System.out.print("Scegli un'opzione: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                System.out.println("Menu:");
+                System.out.println("1. Aggiungi elemento del catalogo");
+                System.out.println("2. Rimuovi elemento dal catalogo (ISBN)");
+                System.out.println("3. Ricerca per ISBN");
+                System.out.println("4. Ricerca per anno di pubblicazione");
+                System.out.println("5. Ricerca per autore");
+                System.out.println("6. Ricerca per titolo o parte di esso");
+                System.out.println("7. Ricerca elementi in prestito (numero tessera)");
+                System.out.println("8. Ricerca prestiti scaduti e non restituiti");
+                System.out.println("0. Esci");
+                System.out.print("Scegli un'opzione: ");
+                int choice = Integer.parseInt(scanner.nextLine());
 
-            switch (choice) {
-                case 1:
-                    addCatalogo();
-                    break;
-                case 2:
-                    removeCatalogoByISBN();
-                    break;
-                case 3:
-                    searchByISBN();
-                    break;
-                case 4:
-                    searchByAnnoDiPubblicazione();
-                    break;
-                case 5:
-                    searchByAutore();
-                    break;
-                case 6:
-                    searchByTitolo();
-                    break;
-                case 7:
-                    searchPrestitiByNumeroTessera();
-                    break;
-                case 8:
-                    searchPrestitiScadutiNonRestituiti();
-                    break;
-                case 0:
-                    exit = true;
-                    break;
-                default:
-                    System.out.println("Opzione non valida.");
+                switch (choice) {
+                    case 1:
+                        addCatalogo();
+                        break;
+                    case 2:
+                        removeCatalogoByISBN();
+                        break;
+                    case 3:
+                        searchByISBN();
+                        break;
+                    case 4:
+                        searchByAnnoDiPubblicazione();
+                        break;
+                    case 5:
+                        searchByAutore();
+                        break;
+                    case 6:
+                        searchByTitolo();
+                        break;
+                    case 7:
+                        searchPrestitiByNumeroTessera();
+                        break;
+                    case 8:
+                        searchPrestitiScadutiNonRestituiti();
+                        break;
+                    case 0:
+                        exit = true;
+                        break;
+                    default:
+                        System.out.println("Opzione non valida.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Errore: Inserisci un numero valido.");
+            } catch (Exception e) {
+                System.out.println("Errore: " + e.getMessage());
             }
         }
         em.close();
@@ -147,7 +152,11 @@ public class MainMenu {
         System.out.print("Inserisci il codice ISBN: ");
         String isbn = scanner.nextLine();
         Catalogo catalogo = catalogoDAO.findByISBN(isbn);
-        System.out.println(catalogo);
+        if (catalogo != null) {
+            System.out.println(catalogo);
+        } else {
+            System.out.println("ISBN non trovato, riprova.");
+        }
     }
 
     private static void searchByAnnoDiPubblicazione() {
@@ -162,14 +171,20 @@ public class MainMenu {
         System.out.print("Inserisci l'autore: ");
         String autore = scanner.nextLine();
         List<Catalogo> cataloghi = catalogoDAO.findByAutore(autore);
-        cataloghi.forEach(System.out::println);
+        if (!cataloghi.isEmpty()) {
+            cataloghi.forEach(System.out::println);
+        } else {
+            System.out.println("Autore non trovato, riprova.");
+        }
     }
 
     private static void searchByTitolo() {
         System.out.print("Inserisci il titolo o parte di esso: ");
         String titolo = scanner.nextLine();
         List<Catalogo> cataloghi = catalogoDAO.findByTitolo(titolo);
-        cataloghi.forEach(System.out::println);
+        for (Catalogo catalogo : cataloghi) {
+            System.out.println("Tipo: " + catalogo.getClass().getSimpleName() + ", Titolo: " + catalogo.getTitolo());
+        }
     }
 
     private static void searchPrestitiByNumeroTessera() {
@@ -177,7 +192,11 @@ public class MainMenu {
         int numeroTessera = scanner.nextInt();
         scanner.nextLine();
         List<Prestito> prestiti = prestitoDAO.findPrestitiByNumeroTessera(numeroTessera);
-        prestiti.forEach(System.out::println);
+        if (!prestiti.isEmpty()) {
+            prestiti.forEach(System.out::println);
+        } else {
+            System.out.println("Numero di tessera non trovato, riprova.");
+        }
     }
 
     private static void searchPrestitiScadutiNonRestituiti() {
